@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * License for the specific language governing permissions and limitations under
   * the License.
   */
-object Tutorial_01_ActorSystem_Introduction extends App {
+object Tutorial_01_ActorSystem_Introduction extends App  {
 
   println("Step 1: create an actor system")
   val system = ActorSystem("DonutStoreActorSystem")
