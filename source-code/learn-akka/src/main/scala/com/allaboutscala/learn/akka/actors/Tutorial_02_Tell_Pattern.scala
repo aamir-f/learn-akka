@@ -1,28 +1,7 @@
 package com.allaboutscala.learn.akka.actors
 
-import akka.actor.{ActorSystem, Props, Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
-/**
-  * Created by Nadim Bahadoor on 28/06/2016.
-  *
-  *  Tutorial: Learn How To Use Akka
-  *
-  * [[http://allaboutscala.com/scala-frameworks/akka/]]
-  *
-  * Copyright 2016 Nadim Bahadoor (http://allaboutscala.com)
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  * use this file except in compliance with the License. You may obtain a copy of
-  * the License at
-  *
-  *  [http://www.apache.org/licenses/LICENSE-2.0]
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  * License for the specific language governing permissions and limitations under
-  * the License.
-  */
 object Tutorial_02_Tell_Pattern extends App {
 
   println("Step 1: Create an actor system")
@@ -31,7 +10,7 @@ object Tutorial_02_Tell_Pattern extends App {
 
 
   println("\nStep 4: Create DonutInfoActor")
-  val donutInfoActor = system.actorOf(Props[DonutInfoActor], name = "DonutInfoActor")
+  val donutInfoActor: ActorRef = system.actorOf(Props[DonutInfoActor], name = "DonutInfoActor")
 
 
 
@@ -58,7 +37,7 @@ object Tutorial_02_Tell_Pattern extends App {
 
     import Tutorial_02_Tell_Pattern.DonutStoreProtocol._
 
-    def receive = {
+    def receive: PartialFunction[Any, Unit] = {
       case Info(name) =>
         log.info(s"Found $name donut")
     }
