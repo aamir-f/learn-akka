@@ -6,27 +6,7 @@ import akka.util.Timeout
 
 import scala.concurrent.Future
 
-/**
-  * Created by Nadim Bahadoor on 28/06/2016.
-  *
-  *  Tutorial: Learn How To Use Akka
-  *
-  * [[http://allaboutscala.com/scala-frameworks/akka/]]
-  *
-  * Copyright 2016 Nadim Bahadoor (http://allaboutscala.com)
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  * use this file except in compliance with the License. You may obtain a copy of
-  * the License at
-  *
-  *  [http://www.apache.org/licenses/LICENSE-2.0]
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  * License for the specific language governing permissions and limitations under
-  * the License.
-  */
+
 object Tutorial_10_Error_Kernel_Supervision extends App {
 
   println("Step 1: Create an actor system")
@@ -51,12 +31,12 @@ object Tutorial_10_Error_Kernel_Supervision extends App {
     found <- vanillaDonutStock
   } yield (println(s"Vanilla donut stock = $found"))
 
-  Thread.sleep(5000)
+ // Thread.sleep(5000)
 
 
 
-  println("\nStep 7: Close the actor system")
-  val isTerminated = system.terminate()
+ /// println("\nStep 7: Close the actor system")
+ // val isTerminated = system.terminate()
 
 
 
@@ -99,22 +79,36 @@ object Tutorial_10_Error_Kernel_Supervision extends App {
   println("\nStep 4: Worker Actor called DonutStockWorkerActor")
   class DonutStockWorkerActor extends Actor with ActorLogging {
 
+    override def preStart(): Unit = {
+      log.info("====preStart======")
+    }
+
     @throws[Exception](classOf[Exception])
     override def postRestart(reason: Throwable): Unit = {
-      log.info(s"restarting ${self.path.name} because of $reason")
+      log.info(s"postRestart, restarting ${self.path.name} because of $reason")
+    }
+
+    override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+      log.info(s"preRestart, restarting ${self.path.name} because of $reason")
+    }
+
+
+
+    override def postStop(): Unit = {
+      log.info("======postStop========")
     }
 
     def receive = {
       case CheckStock(name) =>
         findStock(name)
-        context.stop(self)
+       context.stop(self)
     }
 
     def findStock(name: String): Int = {
       log.info(s"Finding stock for donut = $name")
       100
-//       throw new IllegalStateException("boom") // Will Escalate the exception up the hierarchy
-//       throw new WorkerFailedException("boom") // Will Restart DonutStockWorkerActor
+      //throw new IllegalStateException("boom") // Will Escalate the exception up the hierarchy
+      throw WorkerFailedException("boom") // Will Restart DonutStockWorkerActor
     }
   }
 
